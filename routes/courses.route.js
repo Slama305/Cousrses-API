@@ -1,22 +1,23 @@
 const express = require('express');
 const router = express.Router();
-const {body} = require('express-validator');
-
+const { body, param } = require('express-validator');
 const controller = require('../controllers/Controller');
 
 router.route('/')
     .get(controller.getCourses)
     .post([
-        body('courseName').isLength({min: 3}),
-        body('price').isNumeric()
+        body('courseName').isLength({ min: 3 }).withMessage('Course name must be at least 3 characters long'),
+        body('price').isNumeric().withMessage('Price must be a number')
     ], controller.addCourse);
-    
+
+
 router.route('/:courseId')
-    .get(controller.getCourseById)
+    .get([param('courseId').isNumeric().withMessage('Course ID must be a number')], controller.getCourseById)
     .patch([
-        body('courseName').isLength({min: 3}),
-        body('price').isNumeric()
+        param('courseId').isNumeric().withMessage('Course ID must be a number'),
+        body('courseName').isLength({ min: 3 }).withMessage('Course name must be at least 3 characters long'),
+        body('price').isNumeric().withMessage('Price must be a number')
     ], controller.updateCourse)
-    .delete(controller.deleteCourse);
-    
+    .delete([param('courseId').isNumeric().withMessage('Course ID must be a number')], controller.deleteCourse);
+
 module.exports = router;
